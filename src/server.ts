@@ -304,7 +304,7 @@ app.get("/api/senadores/:id/despesas", async (req, res) => {
       dataDocumento: exp.data || `${exp.ano}-${String(exp.mes).padStart(2, '0')}-01`,
       valorLiquido: exp.valorReembolsado || 0,
       valorDocumento: exp.valorReembolsado || 0,
-      urlDocumento: null
+      urlDocumento: exp.id ? `https://www6g.senado.leg.br/transparencia/sen/download/ceaps/documento/${exp.id}` : null
     }));
 
     res.json({ dados: mapped });

@@ -591,7 +591,8 @@ function renderExpensesChart(totals) {
   }
 
   const sortedCategories = Object.entries(totals).sort((a,b) => b[1] - a[1]);
-  const labels = sortedCategories.map(c => c[0].length > 28 ? c[0].slice(0, 25) + '...' : c[0]);
+  // Increase label characters limit to 38 for better visibility
+  const labels = sortedCategories.map(c => c[0].length > 38 ? c[0].slice(0, 35) + '...' : c[0]);
   const values = sortedCategories.map(c => c[1]);
 
   const backgroundColors = [
@@ -616,10 +617,12 @@ function renderExpensesChart(totals) {
       plugins: {
         legend: {
           display: true,
-          position: 'bottom',
+          // Position legend on the right side on desktop to maximize visibility and prevent clipping
+          position: window.innerWidth > 640 ? 'right' : 'bottom',
           labels: {
             color: '#9ca3af',
-            boxWidth: 10,
+            boxWidth: 8,
+            padding: 12,
             font: {
               family: 'Outfit',
               size: 10
@@ -628,9 +631,14 @@ function renderExpensesChart(totals) {
         },
         tooltip: {
           callbacks: {
+            // Show full, untruncated category name in the tooltip title
+            title: function(context) {
+              const index = context[0].dataIndex;
+              return sortedCategories[index] ? sortedCategories[index][0] : '';
+            },
             label: function(context) {
               const val = context.parsed;
-              return `R$ ${val.toLocaleString('pt-BR', { minimumFractionDigits: 2 })}`;
+              return ` R$ ${val.toLocaleString('pt-BR', { minimumFractionDigits: 2 })}`;
             }
           }
         }

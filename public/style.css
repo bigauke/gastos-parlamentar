@@ -773,7 +773,7 @@ body {
 /* Chart container styling */
 .chart-container {
   position: relative;
-  height: 200px;
+  height: 260px;
   width: 100%;
   margin-bottom: 16px;
 }
