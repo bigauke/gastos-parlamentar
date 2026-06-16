@@ -591,8 +591,7 @@ function renderExpensesChart(totals) {
   }
 
   const sortedCategories = Object.entries(totals).sort((a,b) => b[1] - a[1]);
-  // Increase label characters limit to 38 for better visibility
-  const labels = sortedCategories.map(c => c[0].length > 38 ? c[0].slice(0, 35) + '...' : c[0]);
+  const labels = sortedCategories.map(c => c[0]); // Use full names since HTML legend wraps them
   const values = sortedCategories.map(c => c[1]);
 
   const backgroundColors = [
@@ -616,22 +615,10 @@ function renderExpensesChart(totals) {
       maintainAspectRatio: false,
       plugins: {
         legend: {
-          display: true,
-          // Position legend on the right side on desktop to maximize visibility and prevent clipping
-          position: window.innerWidth > 640 ? 'right' : 'bottom',
-          labels: {
-            color: '#9ca3af',
-            boxWidth: 8,
-            padding: 12,
-            font: {
-              family: 'Outfit',
-              size: 10
-            }
-          }
+          display: false // Disable built-in legend to use our custom HTML legend
         },
         tooltip: {
           callbacks: {
-            // Show full, untruncated category name in the tooltip title
             title: function(context) {
               const index = context[0].dataIndex;
               return sortedCategories[index] ? sortedCategories[index][0] : '';
@@ -646,6 +633,28 @@ function renderExpensesChart(totals) {
       cutout: '65%'
     }
   });
+
+  // Render Custom HTML Legend
+  const legendContainer = document.getElementById("chart-legend");
+  if (legendContainer) {
+    legendContainer.innerHTML = "";
+    sortedCategories.slice(0, 5).forEach((item, idx) => {
+      const categoryName = item[0];
+      const value = item[1];
+      const color = backgroundColors[idx % backgroundColors.length];
+      
+      const legendItem = document.createElement("div");
+      legendItem.className = "legend-item";
+      legendItem.innerHTML = `
+        <span class="legend-color-box" style="background-color: ${color};"></span>
+        <div class="legend-text-info">
+          <span class="legend-cat-name">${categoryName}</span>
+          <span class="legend-cat-value">R$ ${value.toLocaleString('pt-BR', { minimumFractionDigits: 2 })}</span>
+        </div>
+      `;
+      legendContainer.appendChild(legendItem);
+    });
+  }
 }
 
 // 9. Fetch and Render Speeches

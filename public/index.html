@@ -326,8 +326,13 @@
           <!-- Expenses Summary Chart -->
           <div class="details-section-card">
             <h3><i class="fa-solid fa-chart-pie"></i> Gastos por Categoria (<span id="modal-chart-year">2024</span>)</h3>
-            <div class="chart-container">
-              <canvas id="expenses-chart"></canvas>
+            <div class="chart-layout-wrapper">
+              <div class="chart-container">
+                <canvas id="expenses-chart"></canvas>
+              </div>
+              <div class="chart-legend-container" id="chart-legend">
+                <!-- Custom HTML Legend -->
+              </div>
             </div>
             <div class="total-spent-box">
               <span>Total Gasto Registrado (<span id="modal-total-year">2024</span>):</span>
