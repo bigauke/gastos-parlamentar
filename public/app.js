@@ -1,9 +1,10 @@
-// Web Client Application for Gastos Parlamentares
+// Web Client Application for Gastos Parlamentares (Câmara & Senado)
 
 // Global state
 let currentTab = "dashboard";
 let currentModalTab = "expenses-list";
-let activeDeputyId = null;
+let activeDeputyId = null; // Reused for both deputy and senator ID
+let activeHouse = "camara"; // 'camara' or 'senado'
 let chartInstance = null;
 
 const STATES = [
@@ -16,23 +17,23 @@ const PARTIES = [
   "PP", "PRD", "PSB", "PSD", "PSDB", "PSOL", "PV", "REDE", "REPUBLICANOS", "SOLIDARIEDADE", "UNIÃO"
 ];
 
-// Featured deputies to display on dashboard
-const FEATURED_DEPUTIES = [
-  { id: 160976, nome: "Tiririca", partido: "PSD", uf: "SP", foto: "https://www.camara.leg.br/internet/deputado/bandep/160976.jpg" },
-  { id: 220645, nome: "Erika Hilton", partido: "PSOL", uf: "SP", foto: "https://www.camara.leg.br/internet/deputado/bandep/220645.jpg" },
-  { id: 204534, nome: "Tabata Amaral", partido: "PSB", uf: "SP", foto: "https://www.camara.leg.br/internet/deputado/bandep/204534.jpg" },
-  { id: 220639, nome: "Guilherme Boulos", partido: "PSOL", uf: "SP", foto: "https://www.camara.leg.br/internet/deputado/bandep/220639.jpg" }
+// Featured senators & deputies to display on dashboard
+const FEATURED_PARLAMENTARES = [
+  { id: 160976, nome: "Tiririca", partido: "PSD", uf: "SP", foto: "https://www.camara.leg.br/internet/deputado/bandep/160976.jpg", tipo: "camara" },
+  { id: 220645, nome: "Erika Hilton", partido: "PSOL", uf: "SP", foto: "https://www.camara.leg.br/internet/deputado/bandep/220645.jpg", tipo: "camara" },
+  { id: 5742, nome: "Rodrigo Pacheco", partido: "PSD", uf: "MG", foto: "http://www.senado.leg.br/senadores/img/fotos-oficiais/senador5742.jpg", tipo: "senado" },
+  { id: 5012, nome: "Randolfe Rodrigues", partido: "PT", uf: "AP", foto: "http://www.senado.leg.br/senadores/img/fotos-oficiais/senador5012.jpg", tipo: "senado" }
 ];
 
 // Initialize application on DOM content loaded
 document.addEventListener("DOMContentLoaded", () => {
   setupSidebarNavigation();
   populateFilterDropdowns();
-  renderFeaturedDeputies();
+  renderFeaturedParlamentares();
   setupSearchForms();
   
-  // Load initial list of deputies (all)
-  loadDeputiesList();
+  // Load initial list of parlamentares (all)
+  loadParlamentaresList();
 });
 
 // 1. Sidebar Navigation
@@ -73,9 +74,9 @@ function switchTab(tabId) {
   // Update Page Title
   const titleMap = {
     dashboard: { title: "Dashboard Geral", subtitle: "Visão geral do controle social dos gastos parlamentares" },
-    deputados: { title: "Deputados Federais", subtitle: "Busque e analise gastos de parlamentares individualmente" },
-    proposicoes: { title: "Proposições Legislativas", subtitle: "Consulte projetos de lei e emendas constitucionais" },
-    sobre: { title: "Sobre a Cota (CEAP)", subtitle: "Entenda o que é a Cota para Exercício da Atividade Parlamentar" }
+    parlamentares: { title: "Parlamentares Federais", subtitle: "Busque e analise gastos de deputados e senadores individualmente" },
+    proposicoes: { title: "Proposições Legislativas", subtitle: "Consulte projetos de lei e emendas constitucionais na Câmara" },
+    sobre: { title: "Sobre as Cotas (CEAP/CEAPS)", subtitle: "Entenda o que é a Cota para Exercício da Atividade Parlamentar" }
   };
 
   if (titleMap[tabId]) {
@@ -104,18 +105,18 @@ function populateFilterDropdowns() {
 }
 
 // 3. Render Featured
-function renderFeaturedDeputies() {
+function renderFeaturedParlamentares() {
   const listElement = document.getElementById("featured-deputies-list");
   listElement.innerHTML = "";
 
-  FEATURED_DEPUTIES.forEach(dep => {
-    const card = createDeputyCard(dep.id, dep.nome, dep.partido, dep.uf, dep.foto, "");
+  FEATURED_PARLAMENTARES.forEach(p => {
+    const card = createParlamentarCard(p.id, p.nome, p.partido, p.uf, p.foto, "", p.tipo);
     listElement.appendChild(card);
   });
 }
 
-// Helper to create deputy card element
-function createDeputyCard(id, nome, partido, uf, fotoUrl, email) {
+// Helper to create card element
+function createParlamentarCard(id, nome, partido, uf, fotoUrl, email, house) {
   const card = document.createElement("div");
   card.className = "deputy-card";
   card.innerHTML = `
@@ -129,17 +130,17 @@ function createDeputyCard(id, nome, partido, uf, fotoUrl, email) {
       <p class="email">${email || ''}</p>
     </div>
   `;
-  card.addEventListener("click", () => openDeputyModal(id));
+  card.addEventListener("click", () => openParlamentarModal(id, house));
   return card;
 }
 
 // 4. Setup search forms
 function setupSearchForms() {
-  // Deputies Search
-  const searchForm = document.getElementById("deputados-search-form");
+  // Parlamentares Search
+  const searchForm = document.getElementById("parlamentares-search-form");
   searchForm.addEventListener("submit", (e) => {
     e.preventDefault();
-    loadDeputiesList();
+    loadParlamentaresList();
   });
 
   // Propositions Search
@@ -150,9 +151,9 @@ function setupSearchForms() {
   });
 }
 
-// 5. Fetch and Render Deputies List
-async function loadDeputiesList() {
-  const listElement = document.getElementById("deputados-list");
+// 5. Fetch and Render Parlamentares List
+async function loadParlamentaresList() {
+  const listElement = document.getElementById("parlamentares-list");
   listElement.innerHTML = `<div class="spinner-container"><div class="spinner"></div></div>`;
   document.getElementById("results-count").textContent = "Buscando parlamentares...";
 
@@ -164,29 +165,44 @@ async function loadDeputiesList() {
   if (nome) params.append("nome", nome);
   if (uf) params.append("siglaUf", uf);
   if (partido) params.append("siglaPartido", partido);
-  params.append("itens", "24"); // Limit to 24 per page for layout
+  params.append("itens", "24");
+
+  const endpoint = activeHouse === "senado" ? "/api/senadores" : "/api/deputados";
 
   try {
-    const res = await fetch(`/api/deputados?${params.toString()}`);
+    const res = await fetch(`${endpoint}?${params.toString()}`);
     const data = await res.json();
     const list = data.dados || [];
 
     listElement.innerHTML = "";
-    document.getElementById("results-count").textContent = `Encontrado(s) ${list.length} deputado(s)`;
+    const label = activeHouse === "senado" ? "senador(es)" : "deputado(s)";
+    document.getElementById("results-count").textContent = `Encontrado(s) ${list.length} ${label}`;
 
     if (list.length === 0) {
-      listElement.innerHTML = `<p class="no-results" style="grid-column: 1/-1; text-align: center; color: var(--text-secondary);">Nenhum deputado encontrado com os filtros selecionados.</p>`;
+      listElement.innerHTML = `<p class="no-results" style="grid-column: 1/-1; text-align: center; color: var(--text-secondary);">Nenhum parlamentar encontrado com os filtros selecionados.</p>`;
       return;
     }
 
-    list.forEach(dep => {
-      const card = createDeputyCard(dep.id, dep.nome, dep.siglaPartido, dep.siglaUf, dep.urlFoto, dep.email);
+    list.forEach(p => {
+      const card = createParlamentarCard(p.id, p.nome, p.siglaPartido, p.siglaUf, p.urlFoto, p.email, activeHouse);
       listElement.appendChild(card);
     });
   } catch (error) {
-    console.error("Error loading deputies:", error);
-    listElement.innerHTML = `<p style="grid-column: 1/-1; text-align: center; color: red;">Erro ao carregar deputados.</p>`;
+    console.error("Error loading parlamentares:", error);
+    listElement.innerHTML = `<p style="grid-column: 1/-1; text-align: center; color: red;">Erro ao carregar parlamentares.</p>`;
   }
+}
+
+// Switch between Câmara and Senado
+function changeHouse(house) {
+  activeHouse = house;
+  
+  // Toggle button classes
+  document.getElementById("toggle-camara").classList.toggle("active", house === "camara");
+  document.getElementById("toggle-senado").classList.toggle("active", house === "senado");
+  
+  // Reload list
+  loadParlamentaresList();
 }
 
 // 6. Fetch and Render Propositions List
@@ -238,8 +254,9 @@ async function loadPropositionsList() {
 }
 
 // 7. Modal Functionality
-async function openDeputyModal(id) {
+async function openParlamentarModal(id, house) {
   activeDeputyId = id;
+  activeHouse = house;
   const modal = document.getElementById("deputy-modal");
   modal.style.display = "flex";
   setTimeout(() => modal.classList.add("active"), 10);
@@ -261,8 +278,9 @@ async function openDeputyModal(id) {
   switchModalTab("expenses-list");
 
   try {
-    // Fetch Deputy Profile Details
-    const res = await fetch(`/api/deputados/${id}`);
+    // Fetch Profile Details
+    const endpoint = house === "senado" ? `/api/senadores/${id}` : `/api/deputados/${id}`;
+    const res = await fetch(endpoint);
     const profileData = await res.json();
     const dep = profileData.dados || {};
     
@@ -278,13 +296,17 @@ async function openDeputyModal(id) {
     document.getElementById("detail-birth-place").textContent = `${dep.municipioNascimento || ''} - ${dep.ufNascimento || ''}`;
     
     const gab = dep.ultimoStatus.gabinete;
-    document.getElementById("detail-gabinete").textContent = gab ? `Sala ${gab.sala || ''}, Prédio ${gab.predio || ''}, Tel: ${gab.telefone || ''}` : "-";
+    if (house === "senado") {
+      document.getElementById("detail-gabinete").textContent = gab ? `${gab.predio || 'Senado Federal'}, Tel: ${gab.telefone || ''}` : "-";
+    } else {
+      document.getElementById("detail-gabinete").textContent = gab ? `Sala ${gab.sala || ''}, Prédio ${gab.predio || ''}, Tel: ${gab.telefone || ''}` : "-";
+    }
 
     // Load expenses & speeches
-    await loadDeputyExpenses();
-    await loadDeputySpeeches();
+    await loadParlamentarExpenses();
+    await loadParlamentarSpeeches();
   } catch (error) {
-    console.error("Error loading deputy modal details:", error);
+    console.error("Error loading modal details:", error);
   }
 }
 
@@ -323,7 +345,7 @@ function switchModalTab(tabId) {
 }
 
 // 8. Fetch Expenses & Render Chart/Table
-async function loadDeputyExpenses() {
+async function loadParlamentarExpenses() {
   if (!activeDeputyId) return;
 
   const rowsElement = document.getElementById("modal-expenses-rows");
@@ -335,10 +357,11 @@ async function loadDeputyExpenses() {
   const params = new URLSearchParams();
   if (year) params.append("ano", year);
   if (month) params.append("mes", month);
-  params.append("itens", "100"); // fetch up to 100 to draw a nice chart
+  params.append("itens", "100");
 
   try {
-    const res = await fetch(`/api/deputados/${activeDeputyId}/despesas?${params.toString()}`);
+    const endpoint = activeHouse === "senado" ? `/api/senadores/${activeDeputyId}/despesas` : `/api/deputados/${activeDeputyId}/despesas`;
+    const res = await fetch(`${endpoint}?${params.toString()}`);
     const data = await res.json();
     const expenses = data.dados || [];
 
@@ -359,7 +382,6 @@ async function loadDeputyExpenses() {
       const cleanVal = exp.valorLiquido || exp.valorDocumento || 0;
       totalVal += cleanVal;
 
-      // Group for chart
       const cat = exp.tipoDespesa;
       categoryTotals[cat] = (categoryTotals[cat] || 0) + cleanVal;
 
@@ -372,19 +394,16 @@ async function loadDeputyExpenses() {
           <span style="font-size: 0.8rem; color: var(--text-secondary);">${exp.tipoDespesa}</span>
           ${exp.urlDocumento ? `<br><a href="${exp.urlDocumento}" target="_blank" style="font-size:0.75rem; color:var(--accent-blue); text-decoration:none;"><i class="fa-solid fa-file-pdf"></i> Ver NF</a>` : ''}
         </td>
-        <td>${formatDate(exp.dataDocumento || `${exp.ano}-${String(exp.mes).padStart(2,'0')}-01`)}</td>
+        <td>${formatDate(exp.dataDocumento)}</td>
         <td class="text-right text-emerald" style="font-weight:600;">R$ ${cleanVal.toLocaleString('pt-BR', { minimumFractionDigits: 2 })}</td>
       `;
       rowsElement.appendChild(row);
     });
 
     document.getElementById("modal-total-spent").textContent = `R$ ${totalVal.toLocaleString('pt-BR', { minimumFractionDigits: 2 })}`;
-
-    // Draw chart
     renderExpensesChart(categoryTotals);
-
   } catch (error) {
-    console.error("Error loading deputy expenses:", error);
+    console.error("Error loading expenses:", error);
     rowsElement.innerHTML = `<tr><td colspan="4" style="text-align: center; color: red;">Erro ao carregar despesas.</td></tr>`;
   }
 }
@@ -401,7 +420,6 @@ function renderExpensesChart(totals) {
   const labels = sortedCategories.map(c => c[0].length > 28 ? c[0].slice(0, 25) + '...' : c[0]);
   const values = sortedCategories.map(c => c[1]);
 
-  // Premium color palette for Chart
   const backgroundColors = [
     '#3b82f6', '#10b981', '#f59e0b', '#ec4899', '#8b5cf6', 
     '#ef4444', '#06b6d4', '#14b8a6', '#f43f5e', '#a855f7'
@@ -410,7 +428,7 @@ function renderExpensesChart(totals) {
   chartInstance = new Chart(ctx, {
     type: 'doughnut',
     data: {
-      labels: labels.slice(0, 5), // top 5
+      labels: labels.slice(0, 5),
       datasets: [{
         data: values.slice(0, 5),
         backgroundColor: backgroundColors.slice(0, 5),
@@ -449,14 +467,15 @@ function renderExpensesChart(totals) {
 }
 
 // 9. Fetch and Render Speeches
-async function loadDeputySpeeches() {
+async function loadParlamentarSpeeches() {
   if (!activeDeputyId) return;
 
   const speechesElement = document.getElementById("modal-speeches-list");
   speechesElement.innerHTML = `<div class="spinner-container"><div class="spinner"></div></div>`;
 
   try {
-    const res = await fetch(`/api/deputados/${activeDeputyId}/discursos?itens=5`);
+    const endpoint = activeHouse === "senado" ? `/api/senadores/${activeDeputyId}/discursos` : `/api/deputados/${activeDeputyId}/discursos`;
+    const res = await fetch(`${endpoint}?itens=5`);
     const data = await res.json();
     const speeches = data.dados || [];
 
@@ -471,7 +490,7 @@ async function loadDeputySpeeches() {
       const speechDiv = document.createElement("div");
       speechDiv.className = "speech-card";
       
-      const cleanSummary = sp.sumario || sp.ementa || 'Sem transcrição disponível.';
+      const cleanSummary = sp.sumario || "Sem transcrição disponível.";
       
       speechDiv.innerHTML = `
         <header>
@@ -483,7 +502,7 @@ async function loadDeputySpeeches() {
       speechesElement.appendChild(speechDiv);
     });
   } catch (error) {
-    console.error("Error loading deputy speeches:", error);
+    console.error("Error loading speeches:", error);
     speechesElement.innerHTML = `<p style="text-align: center; color: red;">Erro ao carregar discursos.</p>`;
   }
 }
@@ -502,7 +521,6 @@ function formatDate(dateStr) {
 
 function formatCnpjCpf(str) {
   if (!str) return "-";
-  // Remove non digits
   const clean = str.replace(/\D/g, "");
   if (clean.length === 11) {
     return clean.replace(/(\d{3})(\d{3})(\d{3})(\d{2})/, "$1.$2.$3-$4");

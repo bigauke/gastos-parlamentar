@@ -981,3 +981,42 @@ body {
   line-height: 1.5;
   color: var(--text-secondary);
 }
+
+/* House Toggle Styles */
+.house-toggle-wrapper {
+  display: flex;
+  background-color: var(--bg-secondary);
+  padding: 6px;
+  border-radius: var(--radius-lg);
+  border: 1px solid var(--border-color);
+  margin-bottom: 24px;
+  gap: 8px;
+  max-width: fit-content;
+}
+
+.btn-toggle {
+  background: transparent;
+  color: var(--text-secondary);
+  border: none;
+  padding: 10px 20px;
+  border-radius: var(--radius-md);
+  font-family: var(--font-main);
+  font-weight: 600;
+  font-size: 0.9rem;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  transition: var(--transition-smooth);
+}
+
+.btn-toggle:hover {
+  color: var(--text-primary);
+  background-color: rgba(255, 255, 255, 0.02);
+}
+
+.btn-toggle.active {
+  background-color: var(--accent-blue);
+  color: #ffffff;
+  box-shadow: 0 0 12px rgba(59, 130, 246, 0.4);
+}

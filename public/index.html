@@ -35,9 +35,9 @@
           <i class="fa-solid fa-gauge"></i>
           <span>Dashboard</span>
         </a>
-        <a href="#" class="nav-item" data-tab="deputados">
+        <a href="#" class="nav-item" data-tab="parlamentares">
           <i class="fa-solid fa-users"></i>
-          <span>Deputados</span>
+          <span>Parlamentares</span>
         </a>
         <a href="#" class="nav-item" data-tab="proposicoes">
           <i class="fa-solid fa-file-invoice-dollar"></i>
@@ -50,8 +50,8 @@
       </nav>
 
       <div class="sidebar-footer">
-        <p>Dados Abertos da</p>
-        <strong>Câmara dos Deputados</strong>
+        <p>Dados Abertos do</p>
+        <strong>Congresso Nacional</strong>
       </div>
     </aside>
 
@@ -77,9 +77,9 @@
         <div class="dashboard-banner">
           <div class="banner-text">
             <h2>Transparência e Controle Cidadão</h2>
-            <p>Monitore os gastos da Cota para Exercício da Atividade Parlamentar (CEAP), leia discursos de deputados federais e visualize despesas agregadas por categorias e fornecedores em tempo real.</p>
-            <button class="btn btn-primary" onclick="switchTab('deputados')">
-              <i class="fa-solid fa-search"></i> Buscar Deputados
+            <p>Monitore os gastos da Cota para Exercício da Atividade Parlamentar (CEAP) de deputados e da CEAPS de senadores, leia discursos e visualize despesas agregadas por categorias e fornecedores em tempo real.</p>
+            <button class="btn btn-primary" onclick="switchTab('parlamentares')">
+              <i class="fa-solid fa-search"></i> Buscar Parlamentares
             </button>
           </div>
           <div class="banner-illustration">
@@ -87,9 +87,9 @@
           </div>
         </div>
 
-        <div class="grid grid-3">
+        <div class="grid grid-4">
           <!-- Stat Card 1 -->
-          <div class="card glass-card stat-card">
+          <div class="card glass-card stat-card" style="cursor: pointer;" onclick="switchTab('parlamentares'); changeHouse('camara');">
             <div class="card-icon blue"><i class="fa-solid fa-user-tie"></i></div>
             <div class="card-info">
               <h3>513</h3>
@@ -97,14 +97,22 @@
             </div>
           </div>
           <!-- Stat Card 2 -->
+          <div class="card glass-card stat-card" style="cursor: pointer;" onclick="switchTab('parlamentares'); changeHouse('senado');">
+            <div class="card-icon purple" style="background-color: rgba(139, 92, 246, 0.15); border-color: rgba(139, 92, 246, 0.3); color: #8b5cf6;"><i class="fa-solid fa-landmark"></i></div>
+            <div class="card-info">
+              <h3>81</h3>
+              <p>Senadores</p>
+            </div>
+          </div>
+          <!-- Stat Card 3 -->
           <div class="card glass-card stat-card">
             <div class="card-icon emerald"><i class="fa-solid fa-coins"></i></div>
             <div class="card-info">
               <h3>R$ 40 mil</h3>
-              <p>Cota Média Mensal/UF</p>
+              <p>Cota Média / UF</p>
             </div>
           </div>
-          <!-- Stat Card 3 -->
+          <!-- Stat Card 4 -->
           <div class="card glass-card stat-card">
             <div class="card-icon amber"><i class="fa-solid fa-magnifying-glass-dollar"></i></div>
             <div class="card-info">
@@ -127,14 +135,24 @@
         </section>
       </div>
 
-      <!-- Tab: Deputados -->
-      <div class="tab-content" id="tab-deputados">
+      <!-- Tab: Parlamentares -->
+      <div class="tab-content" id="tab-parlamentares">
+        <!-- Switcher to toggle between Câmara and Senado -->
+        <div class="house-toggle-wrapper">
+          <button class="btn-toggle active" id="toggle-camara" onclick="changeHouse('camara')">
+            <i class="fa-solid fa-building-columns"></i> Câmara dos Deputados
+          </button>
+          <button class="btn-toggle" id="toggle-senado" onclick="changeHouse('senado')">
+            <i class="fa-solid fa-landmark"></i> Senado Federal
+          </button>
+        </div>
+
         <!-- Search & Filter Controls -->
         <div class="card filter-card">
-          <form id="deputados-search-form" class="filter-form">
+          <form id="parlamentares-search-form" class="filter-form">
             <div class="input-group">
               <label for="search-nome"><i class="fa-solid fa-user"></i> Nome</label>
-              <input type="text" id="search-nome" placeholder="Ex: Tiririca">
+              <input type="text" id="search-nome" placeholder="Ex: Tiririca ou Alan Rick">
             </div>
             
             <div class="input-group">
@@ -159,12 +177,12 @@
           </form>
         </div>
 
-        <!-- Grid of Deputies -->
+        <!-- Grid of Parlamentares -->
         <div class="deputies-results-wrapper">
           <div class="results-meta">
-            <span id="results-count">Encontrando deputados...</span>
+            <span id="results-count">Encontrando parlamentares...</span>
           </div>
-          <div class="grid grid-4" id="deputados-list">
+          <div class="grid grid-4" id="parlamentares-list">
             <!-- Dynamic Injection -->
             <div class="spinner-container"><div class="spinner"></div></div>
           </div>
