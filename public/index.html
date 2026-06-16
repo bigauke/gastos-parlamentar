@@ -20,9 +20,25 @@
   <div class="app-container">
     <!-- Sidebar Navigation -->
     <aside class="sidebar">
-      <div class="sidebar-header">
+      <div class="sidebar-header" onclick="switchTab('dashboard')">
         <div class="logo-icon">
-          <i class="fa-solid fa-chart-line-up"></i>
+          <svg width="28" height="28" viewBox="0 0 44 44" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <defs>
+              <linearGradient id="logo-grad" x1="0%" y1="0%" x2="100%" y2="100%">
+                <stop offset="0%" stop-color="#3b82f6" />
+                <stop offset="100%" stop-color="#10b981" />
+              </linearGradient>
+            </defs>
+            <!-- Background shield -->
+            <path d="M22 2L38 10V22C38 31.5 31.5 38.5 22 42C12.5 38.5 6 31.5 6 22V10L22 2Z" fill="url(#logo-grad)" fill-opacity="0.12" stroke="url(#logo-grad)" stroke-width="2" stroke-linejoin="round"/>
+            <!-- Glowing central dot -->
+            <circle cx="22" cy="22" r="3.5" fill="#10b981"/>
+            <!-- Magnifying glass icon overlay -->
+            <circle cx="19" cy="19" r="6.5" stroke="#ffffff" stroke-width="2.5"/>
+            <line x1="23.5" y1="23.5" x2="31" y2="31" stroke="#ffffff" stroke-width="2.5" stroke-linecap="round"/>
+            <!-- Small spark/star representing inspection insight -->
+            <path d="M30 10L31 13L34 14L31 15L30 18L29 15L26 14L29 13L30 10Z" fill="#3b82f6"/>
+          </svg>
         </div>
         <div class="logo-text">
           <h2>Fiscaliza</h2>
