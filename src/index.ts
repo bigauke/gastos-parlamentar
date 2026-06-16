@@ -150,7 +150,7 @@ server.tool(
         pagina: args.pagina || 1,
         itens: args.itens || 15,
         ordem: "DESC",
-        ordenarPor: "ano,mes"
+        ordenarPor: "ano"
       });
 
       return {
