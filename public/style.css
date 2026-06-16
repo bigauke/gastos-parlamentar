@@ -204,6 +204,8 @@ body {
   padding: 40px;
   overflow-y: auto;
   max-height: 100vh;
+  display: flex;
+  flex-direction: column;
 }
 
 .top-bar {
@@ -1167,6 +1169,36 @@ body {
   }
   .carousel-nav.next {
     right: -5px;
+  }
+}
+
+/* App Footer Styles */
+.app-footer {
+  margin-top: auto;
+  padding: 24px 0;
+  margin-top: 40px;
+  border-top: 1px solid var(--border-color);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 0.85rem;
+  color: var(--text-secondary);
+}
+
+.app-footer p {
+  margin: 0;
+}
+
+.app-footer strong {
+  color: var(--text-primary);
+}
+
+@media (max-width: 640px) {
+  .app-footer {
+    flex-direction: column;
+    gap: 10px;
+    text-align: center;
+    padding: 20px 0;
   }
 }
 
