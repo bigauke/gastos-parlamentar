@@ -522,6 +522,12 @@ async function loadParlamentarExpenses() {
   const year = document.getElementById("modal-expense-year").value;
   const month = document.getElementById("modal-expense-month").value;
 
+  // Update year text dynamically in modal headers
+  const chartYearSpan = document.getElementById("modal-chart-year");
+  const totalYearSpan = document.getElementById("modal-total-year");
+  if (chartYearSpan) chartYearSpan.textContent = year;
+  if (totalYearSpan) totalYearSpan.textContent = year;
+
   const params = new URLSearchParams();
   if (year) params.append("ano", year);
   if (month) params.append("mes", month);
