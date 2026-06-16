@@ -21,7 +21,7 @@ const FEATURED_DEPUTIES = [
   { id: 160976, nome: "Tiririca", partido: "PSD", uf: "SP", foto: "https://www.camara.leg.br/internet/deputado/bandep/160976.jpg" },
   { id: 220645, nome: "Erika Hilton", partido: "PSOL", uf: "SP", foto: "https://www.camara.leg.br/internet/deputado/bandep/220645.jpg" },
   { id: 204534, nome: "Tabata Amaral", partido: "PSB", uf: "SP", foto: "https://www.camara.leg.br/internet/deputado/bandep/204534.jpg" },
-  { id: 220593, nome: "Guilherme Boulos", partido: "PSOL", uf: "SP", foto: "https://www.camara.leg.br/internet/deputado/bandep/220593.jpg" }
+  { id: 220639, nome: "Guilherme Boulos", partido: "PSOL", uf: "SP", foto: "https://www.camara.leg.br/internet/deputado/bandep/220639.jpg" }
 ];
 
 // Initialize application on DOM content loaded
