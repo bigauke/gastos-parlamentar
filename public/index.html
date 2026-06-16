@@ -2,6 +2,11 @@
 <html lang="pt-BR">
 <head>
   <meta charset="UTF-8">
+  <script>
+    // Inline check to prevent theme flash
+    const savedTheme = localStorage.getItem("theme") || "dark";
+    document.documentElement.setAttribute("data-theme", savedTheme);
+  </script>
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Fiscaliza Cota Parlamentar - Congresso Nacional</title>
   <!-- Google Fonts: Outfit -->
@@ -79,10 +84,16 @@
           <h1 id="page-title">Dashboard Geral</h1>
           <p id="page-subtitle">Visão geral do controle social dos gastos parlamentares</p>
         </div>
-        <div class="quick-stats">
-          <div class="quick-stat-item">
-            <span class="label">Legislatura Atual</span>
-            <span class="value">57ª (2023-2027)</span>
+        <div class="top-bar-right">
+          <button id="theme-toggle" class="theme-toggle-btn" aria-label="Alternar Tema">
+            <i class="fa-solid fa-sun theme-icon-sun"></i>
+            <i class="fa-solid fa-moon theme-icon-moon"></i>
+          </button>
+          <div class="quick-stats">
+            <div class="quick-stat-item">
+              <span class="label">Legislatura Atual</span>
+              <span class="value">57ª (2023-2027)</span>
+            </div>
           </div>
         </div>
       </header>

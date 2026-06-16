@@ -37,6 +37,7 @@ document.addEventListener("DOMContentLoaded", () => {
   populateFilterDropdowns();
   renderFeaturedParlamentares();
   setupSearchForms();
+  setupThemeToggle();
   
   // Load initial list of parlamentares (all)
   loadParlamentaresList();
@@ -599,6 +600,9 @@ function renderExpensesChart(totals) {
     '#ef4444', '#06b6d4', '#14b8a6', '#f43f5e', '#a855f7'
   ];
 
+  const currentTheme = document.documentElement.getAttribute("data-theme") || "dark";
+  const themeBorderColor = currentTheme === "dark" ? "#121824" : "#ffffff";
+
   chartInstance = new Chart(ctx, {
     type: 'doughnut',
     data: {
@@ -607,7 +611,7 @@ function renderExpensesChart(totals) {
         data: values.slice(0, 5),
         backgroundColor: backgroundColors.slice(0, 5),
         borderWidth: 1,
-        borderColor: '#121824'
+        borderColor: themeBorderColor
       }]
     },
     options: {
@@ -719,4 +723,24 @@ function formatCnpjCpf(str) {
     return clean.replace(/(\d{2})(\d{3})(\d{3})(\d{4})(\d{2})/, "$1.$2.$3/$4-$5");
   }
   return str;
+}
+
+// Theme Toggle Functionality
+function setupThemeToggle() {
+  const toggleBtn = document.getElementById("theme-toggle");
+  if (!toggleBtn) return;
+  
+  toggleBtn.addEventListener("click", () => {
+    const currentTheme = document.documentElement.getAttribute("data-theme") || "dark";
+    const newTheme = currentTheme === "dark" ? "light" : "dark";
+    
+    document.documentElement.setAttribute("data-theme", newTheme);
+    localStorage.setItem("theme", newTheme);
+    
+    // Update chart border color dynamically if it exists
+    if (chartInstance && chartInstance.data && chartInstance.data.datasets && chartInstance.data.datasets[0]) {
+      chartInstance.data.datasets[0].borderColor = newTheme === "dark" ? "#121824" : "#ffffff";
+      chartInstance.update();
+    }
+  });
 }
