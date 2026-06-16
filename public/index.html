@@ -122,15 +122,32 @@
           </div>
         </div>
 
-        <!-- Featured Deputies Section -->
+        <!-- Featured Section with Carousel -->
         <section class="section">
           <div class="section-header">
             <h2>Destaques Rápidos</h2>
-            <p>Deputados federais de grande visibilidade (clique para ver detalhes e gastos)</p>
+            <p>Parlamentares de grande visibilidade (clique para ver detalhes e gastos)</p>
           </div>
-          <div class="deputies-showcase grid grid-4" id="featured-deputies-list">
-            <!-- Dynamic Injection -->
-            <div class="spinner-container"><div class="spinner"></div></div>
+          
+          <div class="carousel-container">
+            <button class="carousel-nav prev" id="carousel-prev" aria-label="Anterior">
+              <i class="fa-solid fa-chevron-left"></i>
+            </button>
+            
+            <div class="carousel-track-wrapper">
+              <div class="carousel-track" id="featured-carousel-track">
+                <!-- Dynamic Injection -->
+                <div class="spinner-container"><div class="spinner"></div></div>
+              </div>
+            </div>
+            
+            <button class="carousel-nav next" id="carousel-next" aria-label="Próximo">
+              <i class="fa-solid fa-chevron-right"></i>
+            </button>
+          </div>
+          
+          <div class="carousel-indicators" id="carousel-indicators">
+            <!-- Indicator dots injected dynamically -->
           </div>
         </section>
       </div>

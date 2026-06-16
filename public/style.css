@@ -1020,3 +1020,135 @@ body {
   color: #ffffff;
   box-shadow: 0 0 12px rgba(59, 130, 246, 0.4);
 }
+
+/* Carousel Styles */
+.carousel-container {
+  position: relative;
+  display: flex;
+  align-items: center;
+  width: 100%;
+  margin: 0 auto;
+}
+
+.carousel-track-wrapper {
+  overflow: hidden;
+  width: 100%;
+  padding: 12px 4px; /* prevents shadows on cards from clipping */
+}
+
+.carousel-track {
+  display: flex;
+  gap: 24px;
+  transition: transform 0.5s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+  width: 100%;
+}
+
+.carousel-track .deputy-card {
+  flex: 0 0 calc(25% - 18px); /* 4 cards per row on desktop */
+  margin: 0;
+  transition: transform 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94), box-shadow 0.3s ease;
+}
+
+.carousel-track .deputy-card:hover {
+  transform: translateY(-6px);
+  box-shadow: 0 12px 24px rgba(0, 0, 0, 0.4), 0 0 1px 1px rgba(255, 255, 255, 0.1) inset;
+}
+
+.carousel-nav {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 42px;
+  height: 42px;
+  border-radius: 50%;
+  background: rgba(18, 24, 36, 0.85);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1px solid var(--border-color);
+  color: var(--text-primary);
+  font-size: 1.1rem;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: var(--transition-smooth);
+  z-index: 10;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.4);
+}
+
+.carousel-nav:hover {
+  background: var(--accent-blue);
+  border-color: var(--accent-blue);
+  color: #ffffff;
+  box-shadow: 0 0 16px rgba(59, 130, 246, 0.6);
+}
+
+.carousel-nav:active {
+  transform: translateY(-50%) scale(0.95);
+}
+
+.carousel-nav.prev {
+  left: -20px;
+}
+
+.carousel-nav.next {
+  right: -20px;
+}
+
+.carousel-indicators {
+  display: flex;
+  justify-content: center;
+  gap: 8px;
+  margin-top: 20px;
+}
+
+.carousel-indicator {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background-color: var(--border-color);
+  cursor: pointer;
+  transition: var(--transition-smooth);
+}
+
+.carousel-indicator:hover {
+  background-color: var(--text-muted);
+}
+
+.carousel-indicator.active {
+  background-color: var(--accent-blue);
+  width: 24px;
+  border-radius: 4px;
+  box-shadow: 0 0 8px rgba(59, 130, 246, 0.4);
+}
+
+/* Responsive adjustments for Carousel */
+@media (max-width: 1024px) {
+  .carousel-track .deputy-card {
+    flex: 0 0 calc(50% - 12px); /* 2 cards per row on tablets */
+  }
+  .carousel-nav.prev {
+    left: -10px;
+  }
+  .carousel-nav.next {
+    right: -10px;
+  }
+}
+
+@media (max-width: 640px) {
+  .carousel-track .deputy-card {
+    flex: 0 0 100%; /* 1 card per row on mobile */
+  }
+  .carousel-nav {
+    width: 36px;
+    height: 36px;
+    font-size: 0.9rem;
+  }
+  .carousel-nav.prev {
+    left: -5px;
+  }
+  .carousel-nav.next {
+    right: -5px;
+  }
+}
+

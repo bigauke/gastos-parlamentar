@@ -6,6 +6,8 @@ let currentModalTab = "expenses-list";
 let activeDeputyId = null; // Reused for both deputy and senator ID
 let activeHouse = "camara"; // 'camara' or 'senado'
 let chartInstance = null;
+let carouselIndex = 0;
+let autoplayTimer = null;
 
 const STATES = [
   "AC", "AL", "AM", "AP", "BA", "CE", "DF", "ES", "GO", "MA", "MG", "MS", "MT", 
@@ -17,12 +19,16 @@ const PARTIES = [
   "PP", "PRD", "PSB", "PSD", "PSDB", "PSOL", "PV", "REDE", "REPUBLICANOS", "SOLIDARIEDADE", "UNIÃO"
 ];
 
-// Featured senators & deputies to display on dashboard
+// Featured senators & deputies to display on dashboard carousel (with correct Senate IDs and Photos)
 const FEATURED_PARLAMENTARES = [
-  { id: 160976, nome: "Tiririca", partido: "PSD", uf: "SP", foto: "https://www.camara.leg.br/internet/deputado/bandep/160976.jpg", tipo: "camara" },
+  { id: 160976, nome: "Tiririca", partido: "PL", uf: "SP", foto: "https://www.camara.leg.br/internet/deputado/bandep/160976.jpg", tipo: "camara" },
   { id: 220645, nome: "Erika Hilton", partido: "PSOL", uf: "SP", foto: "https://www.camara.leg.br/internet/deputado/bandep/220645.jpg", tipo: "camara" },
-  { id: 5742, nome: "Rodrigo Pacheco", partido: "PSD", uf: "MG", foto: "http://www.senado.leg.br/senadores/img/fotos-oficiais/senador5742.jpg", tipo: "senado" },
-  { id: 5012, nome: "Randolfe Rodrigues", partido: "PT", uf: "AP", foto: "http://www.senado.leg.br/senadores/img/fotos-oficiais/senador5012.jpg", tipo: "senado" }
+  { id: 209787, nome: "Nikolas Ferreira", partido: "PL", uf: "MG", foto: "https://www.camara.leg.br/internet/deputado/bandep/209787.jpg", tipo: "camara" },
+  { id: 204534, nome: "Tabata Amaral", partido: "PSB", uf: "SP", foto: "https://www.camara.leg.br/internet/deputado/bandep/204534.jpg", tipo: "camara" },
+  { id: 5732, nome: "Rodrigo Pacheco", partido: "PSB", uf: "MG", foto: "https://www.senado.leg.br/senadores/img/fotos-oficiais/senador5732.jpg", tipo: "senado" },
+  { id: 5012, nome: "Randolfe Rodrigues", partido: "PT", uf: "AP", foto: "https://www.senado.leg.br/senadores/img/fotos-oficiais/senador5012.jpg", tipo: "senado" },
+  { id: 6341, nome: "Hamilton Mourão", partido: "REPUBLICANOS", uf: "RS", foto: "https://www.senado.leg.br/senadores/img/fotos-oficiais/senador6341.jpg", tipo: "senado" },
+  { id: 5988, nome: "Soraya Thronicke", partido: "PSB", uf: "MS", foto: "https://www.senado.leg.br/senadores/img/fotos-oficiais/senador5988.jpg", tipo: "senado" }
 ];
 
 // Initialize application on DOM content loaded
@@ -104,15 +110,177 @@ function populateFilterDropdowns() {
   });
 }
 
-// 3. Render Featured
+// 3. Render Featured (Carousel)
 function renderFeaturedParlamentares() {
-  const listElement = document.getElementById("featured-deputies-list");
+  const listElement = document.getElementById("featured-carousel-track");
+  if (!listElement) return;
   listElement.innerHTML = "";
 
   FEATURED_PARLAMENTARES.forEach(p => {
     const card = createParlamentarCard(p.id, p.nome, p.partido, p.uf, p.foto, "", p.tipo);
     listElement.appendChild(card);
   });
+
+  // Init Carousel functionalities
+  initCarousel();
+}
+
+function initCarousel() {
+  const track = document.getElementById("featured-carousel-track");
+  const prevBtn = document.getElementById("carousel-prev");
+  const nextBtn = document.getElementById("carousel-next");
+  const indicatorsContainer = document.getElementById("carousel-indicators");
+
+  if (!track || !prevBtn || !nextBtn || !indicatorsContainer) return;
+
+  carouselIndex = 0; // reset index
+
+  // Render indicators
+  renderCarouselIndicators();
+
+  // Remove existing listeners if any by cloning nodes or just clean setup
+  // Since we run this once on DOMContentLoaded, a clean listener addition is safe.
+  const newPrevBtn = prevBtn.cloneNode(true);
+  const newNextBtn = nextBtn.cloneNode(true);
+  prevBtn.parentNode.replaceChild(newPrevBtn, prevBtn);
+  nextBtn.parentNode.replaceChild(newNextBtn, nextBtn);
+
+  newPrevBtn.addEventListener("click", () => {
+    slideCarousel("prev");
+    resetAutoplay();
+  });
+
+  newNextBtn.addEventListener("click", () => {
+    slideCarousel("next");
+    resetAutoplay();
+  });
+
+  // Handle window resize
+  window.addEventListener("resize", () => {
+    updateCarouselPosition();
+    renderCarouselIndicators();
+  });
+
+  // Autoplay
+  startAutoplay();
+
+  // Pause autoplay on hover
+  const container = document.querySelector(".carousel-container");
+  if (container) {
+    container.onmouseenter = stopAutoplay;
+    container.onmouseleave = startAutoplay;
+  }
+
+  // Set initial position
+  updateCarouselPosition();
+}
+
+function getCardsPerPage() {
+  if (window.innerWidth > 1024) return 4;
+  if (window.innerWidth > 640) return 2;
+  return 1;
+}
+
+function renderCarouselIndicators() {
+  const indicatorsContainer = document.getElementById("carousel-indicators");
+  if (!indicatorsContainer) return;
+  indicatorsContainer.innerHTML = "";
+
+  const cardsPerPage = getCardsPerPage();
+  const totalSteps = Math.max(1, FEATURED_PARLAMENTARES.length - cardsPerPage + 1);
+
+  const prevBtn = document.getElementById("carousel-prev");
+  const nextBtn = document.getElementById("carousel-next");
+
+  if (totalSteps <= 1) {
+    if (prevBtn) prevBtn.style.display = "none";
+    if (nextBtn) nextBtn.style.display = "none";
+    indicatorsContainer.style.display = "none";
+    return;
+  } else {
+    if (prevBtn) prevBtn.style.display = "flex";
+    if (nextBtn) nextBtn.style.display = "flex";
+    indicatorsContainer.style.display = "flex";
+  }
+
+  for (let i = 0; i < totalSteps; i++) {
+    const dot = document.createElement("div");
+    dot.className = `carousel-indicator ${i === carouselIndex ? "active" : ""}`;
+    dot.addEventListener("click", () => {
+      carouselIndex = i;
+      updateCarouselPosition();
+      resetAutoplay();
+    });
+    indicatorsContainer.appendChild(dot);
+  }
+}
+
+function slideCarousel(direction) {
+  const cardsPerPage = getCardsPerPage();
+  const maxIndex = Math.max(0, FEATURED_PARLAMENTARES.length - cardsPerPage);
+
+  if (direction === "next") {
+    if (carouselIndex < maxIndex) {
+      carouselIndex++;
+    } else {
+      carouselIndex = 0; // Wrap around
+    }
+  } else if (direction === "prev") {
+    if (carouselIndex > 0) {
+      carouselIndex--;
+    } else {
+      carouselIndex = maxIndex; // Wrap around
+    }
+  }
+
+  updateCarouselPosition();
+}
+
+function updateCarouselPosition() {
+  const track = document.getElementById("featured-carousel-track");
+  if (!track) return;
+
+  const cardsPerPage = getCardsPerPage();
+  const maxIndex = Math.max(0, FEATURED_PARLAMENTARES.length - cardsPerPage);
+
+  if (carouselIndex > maxIndex) {
+    carouselIndex = maxIndex;
+  }
+
+  const cards = track.querySelectorAll(".deputy-card");
+  if (cards.length === 0) return;
+
+  const firstCard = cards[0];
+  const cardWidth = firstCard.offsetWidth;
+  const gap = 24; // matches standard gap in CSS
+
+  const translation = carouselIndex * (cardWidth + gap);
+  track.style.transform = `translateX(-${translation}px)`;
+
+  // Update active indicators
+  const dots = document.querySelectorAll(".carousel-indicator");
+  dots.forEach((dot, idx) => {
+    dot.classList.toggle("active", idx === carouselIndex);
+  });
+}
+
+function startAutoplay() {
+  stopAutoplay();
+  autoplayTimer = setInterval(() => {
+    slideCarousel("next");
+  }, 4000);
+}
+
+function stopAutoplay() {
+  if (autoplayTimer) {
+    clearInterval(autoplayTimer);
+    autoplayTimer = null;
+  }
+}
+
+function resetAutoplay() {
+  stopAutoplay();
+  startAutoplay();
 }
 
 // Helper to create card element
