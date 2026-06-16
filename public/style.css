@@ -52,6 +52,19 @@
   box-shadow: 0 10px 30px rgba(15, 23, 42, 0.05);
 }
 
+[data-theme="light"] .dashboard-banner {
+  background: linear-gradient(135deg, #ffffff 0%, #f1f5f9 100%);
+  box-shadow: 0 15px 35px rgba(15, 23, 42, 0.05);
+}
+
+[data-theme="light"] .dashboard-banner::before {
+  background: radial-gradient(circle, rgba(59, 130, 246, 0.08) 0%, transparent 70%);
+}
+
+[data-theme="light"] .banner-illustration {
+  color: rgba(15, 23, 42, 0.025);
+}
+
 [data-theme="light"] .expenses-table th {
   background-color: rgba(0, 0, 0, 0.02);
 }
@@ -67,6 +80,12 @@
 
 [data-theme="light"] .sidebar-header .logo-text h2 {
   background: linear-gradient(135deg, #0f172a 30%, #1e293b 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+[data-theme="light"] .sidebar-header:hover .logo-text h2 {
+  background: linear-gradient(135deg, #0f172a 30%, var(--accent-blue) 100%);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
 }
