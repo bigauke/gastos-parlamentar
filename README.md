@@ -1,25 +1,28 @@
-# Gastos Parlamentar MCP Server (Dados Abertos - Câmara dos Deputados)
+# Fiscaliza Cota Parlamentar (Câmara dos Deputados & Senado Federal)
 
-Este é um servidor MCP (Model Context Protocol) escrito em TypeScript para interagir com a API de Dados Abertos da Câmara dos Deputados do Brasil. Ele permite que agentes de IA busquem informações sobre deputados federais, analisem suas despesas parlamentares (CEAP), leiam discursos e busquem proposições legislativas (projetos de lei, PECs, etc.).
+Este é um projeto em TypeScript que expõe uma API local, um servidor MCP (Model Context Protocol) e uma aplicação web interativa para consultar e auditar os gastos de parlamentares federais do Brasil (Deputados Federais e Senadores). Ele integra as APIs de Dados Abertos da Câmara dos Deputados (CEAP) e do Senado Federal (CEAPS).
 
-## Recursos Expostos
+---
 
-### 🛠️ Ferramentas (Tools)
+## Recursos Disponíveis
 
-- `list_deputados`: Lista/busca deputados federais com filtros (nome, estado/UF, partido, legislatura).
-- `get_deputado_detalhes`: Obtém informações detalhadas de um deputado específico por ID.
-- `get_deputado_despesas`: Obtém as despesas (CEAP) de um deputado por ID, com filtros opcionais de ano e mês.
-- `get_deputado_discursos`: Obtém a transcrição dos discursos de um deputado por ID.
-- `buscar_proposicoes`: Busca por proposições legislativas (ex: PECs, PLs, MPVs).
+### 🖥️ Painel Web (Interface de Usuário)
+Acesse a interface completa em `http://localhost:3000` para:
+- Alternar dinamicamente entre a **Câmara dos Deputados** e o **Senado Federal**.
+- Buscar parlamentares por nome, estado (UF) ou partido político.
+- Visualizar um **carrossel dinâmico e interativo** de destaques rápidos dos parlamentares mais influentes do país.
+- Consultar a ficha cadastral do parlamentar, incluindo contatos e gabinete.
+- Visualizar um gráfico de rosquinha interativo (Chart.js) detalhando os **Gastos por Categoria** de forma dinâmica por ano e mês.
+- Acessar a tabela completa de notas fiscais com links de download em **PDF das notas fiscais originais** (CEAP e CEAPS).
+- Ler os discursos mais recentes do parlamentar.
 
-### 📁 Recursos (Resources)
-
-- `referencia://estados`: Lista estática de estados (UFs) e nomes por extenso.
-- `referencia://partidos`: Lista dinâmica de todos os partidos políticos ativos na Câmara dos Deputados.
-
-### 📝 Prompts (Templates)
-
-- `analisar-gastos`: Roteiro estruturado para instruir o modelo a coletar, classificar e auditar os gastos de um parlamentar.
+### 🛠️ Servidor MCP (Model Context Protocol)
+Permite que clientes de IA (como Claude Desktop, Cursor, Cline, etc.) consultem diretamente as APIs:
+- `list_deputados`: Lista/busca deputados federais.
+- `get_deputado_detalhes`: Dados cadastrais detalhados do deputado.
+- `get_deputado_despesas`: Gastos da cota parlamentar (CEAP) do deputado.
+- `get_deputado_discursos`: Discursos proferidos pelo deputado.
+- `buscar_proposicoes`: Busca projetos de lei e emendas.
 
 ---
 
