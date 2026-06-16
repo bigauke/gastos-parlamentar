@@ -1,0 +1,351 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Gastos Parlamentares - Câmara dos Deputados</title>
+  <!-- Google Fonts: Outfit -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+  <!-- FontAwesome for Premium Icons -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <!-- ChartJS for Interactive Data Visualization -->
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <!-- Custom CSS -->
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+  <div class="app-container">
+    <!-- Sidebar Navigation -->
+    <aside class="sidebar">
+      <div class="sidebar-header">
+        <div class="logo-icon">
+          <i class="fa-solid fa-chart-line-up"></i>
+        </div>
+        <div class="logo-text">
+          <h2>Fiscaliza</h2>
+          <span>Cota Parlamentar</span>
+        </div>
+      </div>
+      
+      <nav class="sidebar-nav">
+        <a href="#" class="nav-item active" data-tab="dashboard">
+          <i class="fa-solid fa-gauge"></i>
+          <span>Dashboard</span>
+        </a>
+        <a href="#" class="nav-item" data-tab="deputados">
+          <i class="fa-solid fa-users"></i>
+          <span>Deputados</span>
+        </a>
+        <a href="#" class="nav-item" data-tab="proposicoes">
+          <i class="fa-solid fa-file-invoice-dollar"></i>
+          <span>Proposições</span>
+        </a>
+        <a href="#" class="nav-item" data-tab="sobre">
+          <i class="fa-solid fa-info-circle"></i>
+          <span>Sobre o CEAP</span>
+        </a>
+      </nav>
+
+      <div class="sidebar-footer">
+        <p>Dados Abertos da</p>
+        <strong>Câmara dos Deputados</strong>
+      </div>
+    </aside>
+
+    <!-- Main Content Area -->
+    <main class="main-content">
+      <!-- Top Bar -->
+      <header class="top-bar">
+        <div class="welcome-msg">
+          <h1 id="page-title">Dashboard Geral</h1>
+          <p id="page-subtitle">Visão geral do controle social dos gastos parlamentares</p>
+        </div>
+        <div class="quick-stats">
+          <div class="quick-stat-item">
+            <span class="label">Legislatura Atual</span>
+            <span class="value">57ª (2023-2027)</span>
+          </div>
+        </div>
+      </header>
+
+      <!-- Tabs Contents -->
+      <div class="tab-content active" id="tab-dashboard">
+        <!-- Dashboard Overview Grid -->
+        <div class="dashboard-banner">
+          <div class="banner-text">
+            <h2>Transparência e Controle Cidadão</h2>
+            <p>Monitore os gastos da Cota para Exercício da Atividade Parlamentar (CEAP), leia discursos de deputados federais e visualize despesas agregadas por categorias e fornecedores em tempo real.</p>
+            <button class="btn btn-primary" onclick="switchTab('deputados')">
+              <i class="fa-solid fa-search"></i> Buscar Deputados
+            </button>
+          </div>
+          <div class="banner-illustration">
+            <i class="fa-solid fa-building-columns"></i>
+          </div>
+        </div>
+
+        <div class="grid grid-3">
+          <!-- Stat Card 1 -->
+          <div class="card glass-card stat-card">
+            <div class="card-icon blue"><i class="fa-solid fa-user-tie"></i></div>
+            <div class="card-info">
+              <h3>513</h3>
+              <p>Deputados Federais</p>
+            </div>
+          </div>
+          <!-- Stat Card 2 -->
+          <div class="card glass-card stat-card">
+            <div class="card-icon emerald"><i class="fa-solid fa-coins"></i></div>
+            <div class="card-info">
+              <h3>R$ 40 mil</h3>
+              <p>Cota Média Mensal/UF</p>
+            </div>
+          </div>
+          <!-- Stat Card 3 -->
+          <div class="card glass-card stat-card">
+            <div class="card-icon amber"><i class="fa-solid fa-magnifying-glass-dollar"></i></div>
+            <div class="card-info">
+              <h3>100%</h3>
+              <p>Dados Públicos</p>
+            </div>
+          </div>
+        </div>
+
+        <!-- Featured Deputies Section -->
+        <section class="section">
+          <div class="section-header">
+            <h2>Destaques Rápidos</h2>
+            <p>Deputados federais de grande visibilidade (clique para ver detalhes e gastos)</p>
+          </div>
+          <div class="deputies-showcase grid grid-4" id="featured-deputies-list">
+            <!-- Dynamic Injection -->
+            <div class="spinner-container"><div class="spinner"></div></div>
+          </div>
+        </section>
+      </div>
+
+      <!-- Tab: Deputados -->
+      <div class="tab-content" id="tab-deputados">
+        <!-- Search & Filter Controls -->
+        <div class="card filter-card">
+          <form id="deputados-search-form" class="filter-form">
+            <div class="input-group">
+              <label for="search-nome"><i class="fa-solid fa-user"></i> Nome</label>
+              <input type="text" id="search-nome" placeholder="Ex: Tiririca">
+            </div>
+            
+            <div class="input-group">
+              <label for="search-uf"><i class="fa-solid fa-map-pin"></i> Estado (UF)</label>
+              <select id="search-uf">
+                <option value="">Todos os Estados</option>
+                <!-- Dynamic Injection -->
+              </select>
+            </div>
+
+            <div class="input-group">
+              <label for="search-partido"><i class="fa-solid fa-flag"></i> Partido</label>
+              <select id="search-partido">
+                <option value="">Todos os Partidos</option>
+                <!-- Dynamic Injection -->
+              </select>
+            </div>
+
+            <button type="submit" class="btn btn-primary btn-search">
+              <i class="fa-solid fa-magnifying-glass"></i> Filtrar
+            </button>
+          </form>
+        </div>
+
+        <!-- Grid of Deputies -->
+        <div class="deputies-results-wrapper">
+          <div class="results-meta">
+            <span id="results-count">Encontrando deputados...</span>
+          </div>
+          <div class="grid grid-4" id="deputados-list">
+            <!-- Dynamic Injection -->
+            <div class="spinner-container"><div class="spinner"></div></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Tab: Proposições -->
+      <div class="tab-content" id="tab-proposicoes">
+        <div class="card filter-card">
+          <form id="proposicoes-search-form" class="filter-form">
+            <div class="input-group">
+              <label for="prop-tipo">Tipo</label>
+              <select id="prop-tipo">
+                <option value="PL">PL (Projeto de Lei)</option>
+                <option value="PEC">PEC (Proposta de Emenda à Const.)</option>
+                <option value="MPV">MPV (Medida Provisória)</option>
+                <option value="REQ">REQ (Requerimento)</option>
+              </select>
+            </div>
+
+            <div class="input-group">
+              <label for="prop-ano">Ano</label>
+              <input type="number" id="prop-ano" placeholder="Ex: 2024" value="2024">
+            </div>
+
+            <div class="input-group">
+              <label for="prop-numero">Número</label>
+              <input type="number" id="prop-numero" placeholder="Ex: 191">
+            </div>
+
+            <button type="submit" class="btn btn-primary btn-search">
+              <i class="fa-solid fa-magnifying-glass"></i> Buscar Proposição
+            </button>
+          </form>
+        </div>
+
+        <div class="results-meta">
+          <span id="prop-results-count">Busque proposições de lei usando o filtro acima.</span>
+        </div>
+        
+        <div class="propositions-list-wrapper" id="proposicoes-list">
+          <!-- Dynamic Injection -->
+        </div>
+      </div>
+
+      <!-- Tab: Sobre -->
+      <div class="tab-content" id="tab-sobre">
+        <div class="card glass-card text-content-card">
+          <h2>Sobre a Cota Parlamentar (CEAP)</h2>
+          <hr>
+          <p>A <strong>Cota para o Exercício da Atividade Parlamentar (CEAP)</strong> é um recurso público destinado a custear as despesas típicas do mandato dos deputados federais brasileiros. O valor máximo da cota varia de acordo com o estado do deputado, devido aos diferentes custos das passagens aéreas para Brasília.</p>
+          
+          <h3>Que tipo de gastos a cota cobre?</h3>
+          <ul>
+            <li><i class="fa-solid fa-check text-emerald"></i> Passagens aéreas, terrestres e marítimas</li>
+            <li><i class="fa-solid fa-check text-emerald"></i> Telefonia, serviços postais e internet</li>
+            <li><i class="fa-solid fa-check text-emerald"></i> Manutenção de escritórios de apoio à atividade parlamentar</li>
+            <li><i class="fa-solid fa-check text-emerald"></i> Assinatura de publicações, TV a cabo e jornais</li>
+            <li><i class="fa-solid fa-check text-emerald"></i> Locação de veículos, embarcações e aeronaves</li>
+            <li><i class="fa-solid fa-check text-emerald"></i> Combustíveis e lubrificantes</li>
+            <li><i class="fa-solid fa-check text-emerald"></i> Hospedagem (exceto no Distrito Federal)</li>
+            <li><i class="fa-solid fa-check text-emerald"></i> Divulgação da atividade parlamentar (propaganda de mandato)</li>
+          </ul>
+
+          <h3>Como funciona a fiscalização?</h3>
+          <p>Os deputados são responsáveis por apresentar as notas fiscais e comprovantes de despesa, que são disponibilizados publicamente no portal de Dados Abertos da Câmara. Qualquer cidadão, ou agentes inteligentes de IA como este, pode auditar esses dados e ajudar no controle social dos gastos públicos.</p>
+        </div>
+      </div>
+    </main>
+  </div>
+
+  <!-- Detailed Modal for Deputy Information & Expenses -->
+  <div class="modal" id="deputy-modal">
+    <div class="modal-content glass-card">
+      <header class="modal-header">
+        <div class="deputy-modal-profile">
+          <img id="modal-deputy-photo" src="" alt="Foto">
+          <div class="deputy-modal-meta">
+            <h2 id="modal-deputy-name">Nome do Deputado</h2>
+            <p><span id="modal-deputy-party">Partido</span> - <span id="modal-deputy-uf">UF</span></p>
+            <span class="badge" id="modal-deputy-status">Em Exercício</span>
+          </div>
+        </div>
+        <button class="modal-close-btn" onclick="closeModal()">&times;</button>
+      </header>
+
+      <div class="modal-body-layout">
+        <!-- Left Side: Profile Details & Charts -->
+        <div class="modal-left-column">
+          <!-- Profile Quick Details Card -->
+          <div class="details-section-card">
+            <h3><i class="fa-solid fa-address-card"></i> Dados Cadastrais</h3>
+            <ul class="profile-details-list">
+              <li><strong>Nome Civil:</strong> <span id="detail-civil-name">-</span></li>
+              <li><strong>E-mail:</strong> <span id="detail-email">-</span></li>
+              <li><strong>Data de Nascimento:</strong> <span id="detail-birth-date">-</span></li>
+              <li><strong>Naturalidade:</strong> <span id="detail-birth-place">-</span></li>
+              <li><strong>Gabinete:</strong> <span id="detail-gabinete">-</span></li>
+            </ul>
+          </div>
+
+          <!-- Expenses Summary Chart -->
+          <div class="details-section-card">
+            <h3><i class="fa-solid fa-chart-pie"></i> Gastos por Categoria (2024)</h3>
+            <div class="chart-container">
+              <canvas id="expenses-chart"></canvas>
+            </div>
+            <div class="total-spent-box">
+              <span>Total Gasto Registrado (2024):</span>
+              <strong id="modal-total-spent">R$ 0,00</strong>
+            </div>
+          </div>
+        </div>
+
+        <!-- Right Side: Expenses List & Speeches -->
+        <div class="modal-right-column">
+          <!-- Tabs inside Modal -->
+          <div class="modal-tabs">
+            <button class="modal-tab-btn active" onclick="switchModalTab('expenses-list')">
+              <i class="fa-solid fa-receipt"></i> Últimas Despesas (CEAP)
+            </button>
+            <button class="modal-tab-btn" onclick="switchModalTab('speeches-list')">
+              <i class="fa-solid fa-microphone"></i> Discursos Recentes
+            </button>
+          </div>
+
+          <!-- Modal Tab: Expenses List -->
+          <div class="modal-tab-content active" id="modal-tab-expenses-list">
+            <div class="expenses-filter-bar">
+              <select id="modal-expense-year" onchange="loadDeputyExpenses()">
+                <option value="2026">2026</option>
+                <option value="2025">2025</option>
+                <option value="2024" selected>2024</option>
+                <option value="2023">2023</option>
+              </select>
+              <select id="modal-expense-month" onchange="loadDeputyExpenses()">
+                <option value="">Todos os Meses</option>
+                <option value="1">Janeiro</option>
+                <option value="2">Fevereiro</option>
+                <option value="3">Março</option>
+                <option value="4">Abril</option>
+                <option value="5">Maio</option>
+                <option value="6">Junho</option>
+                <option value="7">Julho</option>
+                <option value="8">Agosto</option>
+                <option value="9">Setembro</option>
+                <option value="10">Outubro</option>
+                <option value="11">Novembro</option>
+                <option value="12">Dezembro</option>
+              </select>
+            </div>
+
+            <div class="table-container">
+              <table class="expenses-table">
+                <thead>
+                  <tr>
+                    <th>Fornecedor</th>
+                    <th>Tipo de Despesa</th>
+                    <th>Data</th>
+                    <th class="text-right">Valor</th>
+                  </tr>
+                </thead>
+                <tbody id="modal-expenses-rows">
+                  <!-- Dynamic Injection -->
+                </tbody>
+              </table>
+            </div>
+          </div>
+
+          <!-- Modal Tab: Speeches List -->
+          <div class="modal-tab-content" id="modal-tab-speeches-list">
+            <div class="speeches-container" id="modal-speeches-list">
+              <!-- Dynamic Injection -->
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- JavaScript file -->
+  <script src="app.js"></script>
+</body>
+</html>
