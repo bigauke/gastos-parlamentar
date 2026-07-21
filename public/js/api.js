@@ -15,9 +15,7 @@ async function fetchCamara(endpoint, params = {}) {
     }
   });
 
-  const response = await fetch(url.toString(), {
-    headers: { "Accept": "application/json" }
-  });
+  const response = await fetch(url.toString());
 
   if (!response.ok) throw new Error(`Erro API Câmara: ${response.status}`);
   return await response.json();
@@ -35,7 +33,7 @@ export async function fetchParlamentares(house, filters) {
   } else {
     // Senado
     const url = `${API_SENADO}/senador/lista/atual.json`;
-    const response = await fetch(url, { headers: { "Accept": "application/json" } });
+    const response = await fetch(url);
     if (!response.ok) throw new Error("Erro API Senado");
     
     const data = await response.json();
@@ -79,7 +77,7 @@ export async function fetchParlamentarDetalhes(house, id) {
     return data.dados;
   } else {
     const url = `${API_SENADO}/senador/${id}.json`;
-    const response = await fetch(url, { headers: { "Accept": "application/json" } });
+    const response = await fetch(url);
     if (!response.ok) throw new Error("Erro API Senado Detalhes");
     
     const data = await response.json();
@@ -127,7 +125,7 @@ async function fetchCachedSenadoCeaps(ano) {
     }
     
     console.log(`Baixando CEAPS Senado - ${ano}...`);
-    const response = await fetch(url, { headers: { "Accept": "application/json" } });
+    const response = await fetch(url);
     if (response.ok) {
       cache.put(url, response.clone());
       return await response.json();
@@ -135,7 +133,7 @@ async function fetchCachedSenadoCeaps(ano) {
   }
 
   // Fallback se Cache API não existir
-  const response = await fetch(url, { headers: { "Accept": "application/json" } });
+  const response = await fetch(url);
   return await response.json();
 }
 
@@ -184,7 +182,7 @@ export async function fetchDiscursos(house, id) {
     return data.dados;
   } else {
     const url = `${API_SENADO}/senador/${id}/discursos.json?dataInicio=2025-01-01`;
-    const response = await fetch(url, { headers: { "Accept": "application/json" } });
+    const response = await fetch(url);
     if (!response.ok) throw new Error("Erro API Senado Discursos");
     
     const data = await response.json();

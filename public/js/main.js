@@ -45,7 +45,7 @@ const FEATURED_PARLAMENTARES = [
   { id: 5988, nome: "Soraya Thronicke", partido: "PSB", uf: "MS", foto: "https://www.senado.leg.br/senadores/img/fotos-oficiais/senador5988.jpg", tipo: "senado" }
 ];
 
-document.addEventListener("DOMContentLoaded", () => {
+function initApp() {
   setupSidebarNavigation();
   populateFilterDropdowns();
   setupSearchForms();
@@ -59,7 +59,13 @@ document.addEventListener("DOMContentLoaded", () => {
   initFeaturedCarousel(FEATURED_PARLAMENTARES, "featured-carousel-track", openParlamentarModal);
   
   loadParlamentaresList();
-});
+}
+
+if (document.readyState === 'loading') {
+  document.addEventListener("DOMContentLoaded", initApp);
+} else {
+  initApp();
+}
 
 function setupSidebarNavigation() {
   const navItems = document.querySelectorAll(".sidebar-nav .nav-item");
