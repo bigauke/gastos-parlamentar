@@ -96,7 +96,7 @@ function renderCarouselIndicators() {
 
   for (let i = 0; i < totalSteps; i++) {
     const dot = document.createElement("div");
-    dot.className = \`carousel-indicator \${i === carouselIndex ? "active" : ""}\`;
+    dot.className = `carousel-indicator ${i === carouselIndex ? "active" : ""}`;
     dot.addEventListener("click", () => {
       carouselIndex = i;
       updateCarouselPosition();
@@ -137,7 +137,7 @@ function updateCarouselPosition() {
   const gap = 24; 
 
   const translation = carouselIndex * (cardWidth + gap);
-  track.style.transform = \`translateX(-\${translation}px)\`;
+  track.style.transform = `translateX(-${translation}px)`;
 
   const dots = document.querySelectorAll(".carousel-indicator");
   dots.forEach((dot, idx) => {

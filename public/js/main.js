@@ -127,7 +127,7 @@ async function loadParlamentaresList() {
   const listElement = document.getElementById("parlamentares-list");
   if (!listElement) return;
   
-  listElement.innerHTML = \`<div class="spinner-container"><div class="spinner"></div></div>\`;
+  listElement.innerHTML = `<div class="spinner-container"><div class="spinner"></div></div>`;
   document.getElementById("results-count").textContent = "Buscando parlamentares...";
 
   const filters = {
@@ -142,10 +142,10 @@ async function loadParlamentaresList() {
     listElement.innerHTML = "";
     
     const label = activeHouse === "senado" ? "senador(es)" : "deputado(s)";
-    document.getElementById("results-count").textContent = \`Encontrado(s) \${list.length} \${label}\`;
+    document.getElementById("results-count").textContent = `Encontrado(s) ${list.length} ${label}`;
 
     if (list.length === 0) {
-      listElement.innerHTML = \`<p class="no-results" style="grid-column: 1/-1; text-align: center; color: var(--text-secondary);">Nenhum parlamentar encontrado com os filtros selecionados.</p>\`;
+      listElement.innerHTML = `<p class="no-results" style="grid-column: 1/-1; text-align: center; color: var(--text-secondary);">Nenhum parlamentar encontrado com os filtros selecionados.</p>`;
       return;
     }
 
@@ -155,7 +155,7 @@ async function loadParlamentaresList() {
     });
   } catch (error) {
     console.error(error);
-    listElement.innerHTML = \`<p style="grid-column: 1/-1; text-align: center; color: red;">Erro ao carregar parlamentares.</p>\`;
+    listElement.innerHTML = `<p style="grid-column: 1/-1; text-align: center; color: red;">Erro ao carregar parlamentares.</p>`;
   }
 }
 
@@ -163,7 +163,7 @@ async function loadPropositionsList() {
   const listElement = document.getElementById("proposicoes-list");
   if (!listElement) return;
 
-  listElement.innerHTML = \`<div class="spinner-container"><div class="spinner"></div></div>\`;
+  listElement.innerHTML = `<div class="spinner-container"><div class="spinner"></div></div>`;
   
   const filters = {
     siglaTipo: document.getElementById("prop-tipo").value,
@@ -174,30 +174,30 @@ async function loadPropositionsList() {
   try {
     const list = await fetchProposicoes(filters);
     listElement.innerHTML = "";
-    document.getElementById("prop-results-count").textContent = \`Retornados \${list.length} item(ns)\`;
+    document.getElementById("prop-results-count").textContent = `Retornados ${list.length} item(ns)`;
 
     if (list.length === 0) {
-      listElement.innerHTML = \`<p style="text-align: center; color: var(--text-secondary); padding: 30px;">Nenhuma proposição legislativa encontrada.</p>\`;
+      listElement.innerHTML = `<p style="text-align: center; color: var(--text-secondary); padding: 30px;">Nenhuma proposição legislativa encontrada.</p>`;
       return;
     }
 
     list.forEach(item => {
       const propDiv = document.createElement("div");
       propDiv.className = "proposition-item card glass-card";
-      propDiv.innerHTML = \`
+      propDiv.innerHTML = `
         <div class="proposition-header">
-          <h3>\${item.siglaTipo} \${item.numero}/\${item.ano}</h3>
-          <span>ID: \${item.id}</span>
+          <h3>${item.siglaTipo} ${item.numero}/${item.ano}</h3>
+          <span>ID: ${item.id}</span>
         </div>
         <div class="proposition-body">
-          <p>\${item.ementa || 'Sem ementa registrada.'}</p>
+          <p>${item.ementa || 'Sem ementa registrada.'}</p>
         </div>
-      \`;
+      `;
       listElement.appendChild(propDiv);
     });
   } catch (error) {
     console.error(error);
-    listElement.innerHTML = \`<p style="text-align: center; color: red;">Erro ao buscar proposições.</p>\`;
+    listElement.innerHTML = `<p style="text-align: center; color: red;">Erro ao buscar proposições.</p>`;
   }
 }
 
@@ -217,8 +217,8 @@ async function openParlamentarModal(id, house) {
   document.getElementById("detail-birth-date").textContent = "Carregando...";
   document.getElementById("detail-birth-place").textContent = "Carregando...";
   document.getElementById("detail-gabinete").textContent = "Carregando...";
-  document.getElementById("modal-expenses-rows").innerHTML = \`<tr><td colspan="4" style="text-align: center;"><div class="spinner"></div></td></tr>\`;
-  document.getElementById("modal-speeches-list").innerHTML = \`<div class="spinner-container"><div class="spinner"></div></div>\`;
+  document.getElementById("modal-expenses-rows").innerHTML = `<tr><td colspan="4" style="text-align: center;"><div class="spinner"></div></td></tr>`;
+  document.getElementById("modal-speeches-list").innerHTML = `<div class="spinner-container"><div class="spinner"></div></div>`;
   document.getElementById("modal-total-spent").textContent = "R$ 0,00";
 
   switchModalTab("expenses-list");
@@ -234,13 +234,13 @@ async function openParlamentarModal(id, house) {
     document.getElementById("detail-civil-name").textContent = dep.nomeCivil || "-";
     document.getElementById("detail-email").textContent = dep.ultimoStatus.email || "-";
     document.getElementById("detail-birth-date").textContent = formatDate(dep.dataNascimento) || "-";
-    document.getElementById("detail-birth-place").textContent = \`\${dep.municipioNascimento || ''} - \${dep.ufNascimento || ''}\`;
+    document.getElementById("detail-birth-place").textContent = `${dep.municipioNascimento || ''} - ${dep.ufNascimento || ''}`;
     
     const gab = dep.ultimoStatus.gabinete;
     if (house === "senado") {
-      document.getElementById("detail-gabinete").textContent = gab ? \`\${gab.predio || 'Senado Federal'}, Tel: \${gab.telefone || ''}\` : "-";
+      document.getElementById("detail-gabinete").textContent = gab ? `${gab.predio || 'Senado Federal'}, Tel: ${gab.telefone || ''}` : "-";
     } else {
-      document.getElementById("detail-gabinete").textContent = gab ? \`Sala \${gab.sala || ''}, Prédio \${gab.predio || ''}, Tel: \${gab.telefone || ''}\` : "-";
+      document.getElementById("detail-gabinete").textContent = gab ? `Sala ${gab.sala || ''}, Prédio ${gab.predio || ''}, Tel: ${gab.telefone || ''}` : "-";
     }
 
     await loadParlamentarExpenses();
@@ -264,7 +264,7 @@ async function loadParlamentarExpenses() {
   if (!activeDeputyId) return;
 
   const rowsElement = document.getElementById("modal-expenses-rows");
-  rowsElement.innerHTML = \`<tr><td colspan="4" style="text-align: center;"><div class="spinner" style="margin: 20px auto;"></div></td></tr>\`;
+  rowsElement.innerHTML = `<tr><td colspan="4" style="text-align: center;"><div class="spinner" style="margin: 20px auto;"></div></td></tr>`;
 
   const year = document.getElementById("modal-expense-year").value;
   const month = document.getElementById("modal-expense-month").value;
@@ -279,7 +279,7 @@ async function loadParlamentarExpenses() {
     rowsElement.innerHTML = "";
 
     if (expenses.length === 0) {
-      rowsElement.innerHTML = \`<tr><td colspan="4" style="text-align: center; color: var(--text-secondary); padding: 30px;">Nenhuma despesa declarada para este período.</td></tr>\`;
+      rowsElement.innerHTML = `<tr><td colspan="4" style="text-align: center; color: var(--text-secondary); padding: 30px;">Nenhuma despesa declarada para este período.</td></tr>`;
       document.getElementById("modal-total-spent").textContent = "R$ 0,00";
       destroyChart();
       return;
@@ -296,26 +296,26 @@ async function loadParlamentarExpenses() {
       const cat = exp.tipoDespesa;
       categoryTotals[cat] = (categoryTotals[cat] || 0) + cleanVal;
 
-      row.innerHTML = \`
+      row.innerHTML = `
         <td>
-          <strong>\${exp.nomeFornecedor}</strong>
-          <br><small style="color: var(--text-muted);">\${formatCnpjCpf(exp.cnpjCpfFornecedor)}</small>
+          <strong>${exp.nomeFornecedor}</strong>
+          <br><small style="color: var(--text-muted);">${formatCnpjCpf(exp.cnpjCpfFornecedor)}</small>
         </td>
         <td>
-          <span style="font-size: 0.8rem; color: var(--text-secondary);">\${exp.tipoDespesa}</span>
-          \${exp.urlDocumento ? \`<br><a href="\${exp.urlDocumento}" target="_blank" style="font-size:0.75rem; color:var(--accent-blue); text-decoration:none;"><i class="fa-solid fa-file-pdf"></i> Ver NF</a>\` : ''}
+          <span style="font-size: 0.8rem; color: var(--text-secondary);">${exp.tipoDespesa}</span>
+          ${exp.urlDocumento ? `<br><a href="${exp.urlDocumento}" target="_blank" style="font-size:0.75rem; color:var(--accent-blue); text-decoration:none;"><i class="fa-solid fa-file-pdf"></i> Ver NF</a>` : ''}
         </td>
-        <td>\${formatDate(exp.dataDocumento)}</td>
-        <td class="text-right text-emerald" style="font-weight:600;">R$ \${cleanVal.toLocaleString('pt-BR', { minimumFractionDigits: 2 })}</td>
-      \`;
+        <td>${formatDate(exp.dataDocumento)}</td>
+        <td class="text-right text-emerald" style="font-weight:600;">R$ ${cleanVal.toLocaleString('pt-BR', { minimumFractionDigits: 2 })}</td>
+      `;
       rowsElement.appendChild(row);
     });
 
-    document.getElementById("modal-total-spent").textContent = \`R$ \${totalVal.toLocaleString('pt-BR', { minimumFractionDigits: 2 })}\`;
+    document.getElementById("modal-total-spent").textContent = `R$ ${totalVal.toLocaleString('pt-BR', { minimumFractionDigits: 2 })}`;
     renderExpensesChart(categoryTotals);
   } catch (error) {
     console.error(error);
-    rowsElement.innerHTML = \`<tr><td colspan="4" style="text-align: center; color: red;">Erro ao carregar despesas.</td></tr>\`;
+    rowsElement.innerHTML = `<tr><td colspan="4" style="text-align: center; color: red;">Erro ao carregar despesas.</td></tr>`;
   }
 }
 
@@ -323,14 +323,14 @@ async function loadParlamentarSpeeches() {
   if (!activeDeputyId) return;
 
   const speechesElement = document.getElementById("modal-speeches-list");
-  speechesElement.innerHTML = \`<div class="spinner-container"><div class="spinner"></div></div>\`;
+  speechesElement.innerHTML = `<div class="spinner-container"><div class="spinner"></div></div>`;
 
   try {
     const speeches = await fetchDiscursos(activeHouse, activeDeputyId);
     speechesElement.innerHTML = "";
 
     if (speeches.length === 0) {
-      speechesElement.innerHTML = \`<p style="text-align: center; color: var(--text-secondary); padding: 30px;">Nenhum discurso parlamentar recente registrado.</p>\`;
+      speechesElement.innerHTML = `<p style="text-align: center; color: var(--text-secondary); padding: 30px;">Nenhum discurso parlamentar recente registrado.</p>`;
       return;
     }
 
@@ -339,17 +339,17 @@ async function loadParlamentarSpeeches() {
       speechDiv.className = "speech-card";
       const cleanSummary = sp.sumario || "Sem transcrição disponível.";
       
-      speechDiv.innerHTML = \`
+      speechDiv.innerHTML = `
         <header>
-          <span><i class="fa-solid fa-calendar-days"></i> \${formatDate(sp.dataHoraInicio)}</span>
-          <span>Tipo: \${sp.tipoDiscurso || 'Plenário'}</span>
+          <span><i class="fa-solid fa-calendar-days"></i> ${formatDate(sp.dataHoraInicio)}</span>
+          <span>Tipo: ${sp.tipoDiscurso || 'Plenário'}</span>
         </header>
-        <p>\${cleanSummary}</p>
-      \`;
+        <p>${cleanSummary}</p>
+      `;
       speechesElement.appendChild(speechDiv);
     });
   } catch (error) {
     console.error(error);
-    speechesElement.innerHTML = \`<p style="text-align: center; color: red;">Erro ao carregar discursos.</p>\`;
+    speechesElement.innerHTML = `<p style="text-align: center; color: red;">Erro ao carregar discursos.</p>`;
   }
 }
