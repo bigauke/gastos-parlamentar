@@ -113,6 +113,17 @@ export async function fetchParlamentarDetalhes(house, id) {
  * Função de Cache usando Cache API do Navegador para baixar CEAPS
  */
 async function fetchCachedSenadoCeaps(ano) {
+  // 1. Tenta carregar primeiro os dados estáticos locais hospedados com a aplicação
+  try {
+    const staticRes = await fetch(`./data/ceaps-${ano}.json`);
+    if (staticRes.ok) {
+      console.log(`Usando dados estáticos empacotados para CEAPS Senado - ${ano}`);
+      return await staticRes.json();
+    }
+  } catch (e) {
+    console.warn(`Não foi possível carregar ./data/ceaps-${ano}.json, tentando fallback...`);
+  }
+
   const url = `${CEAPS_SENADO}/${ano}`;
   const cacheName = 'ceaps-cache-v1';
   
@@ -125,10 +136,14 @@ async function fetchCachedSenadoCeaps(ano) {
     }
     
     console.log(`Baixando CEAPS Senado - ${ano}...`);
-    const response = await fetch(url);
-    if (response.ok) {
-      cache.put(url, response.clone());
-      return await response.json();
+    try {
+      const response = await fetch(url);
+      if (response.ok) {
+        cache.put(url, response.clone());
+        return await response.json();
+      }
+    } catch (err) {
+      console.warn("Erro no fetch direto, tentando fallback...", err);
     }
   }
 
